@@ -38,13 +38,13 @@ public class AuthenticationController {
     }
 
     @PutMapping("/validate-email-verification-token")
-    public String verifyEmail(@RequestParam String token, @RequestAttribute("authentication") AuthenticationUser user) {
+    public String verifyEmail(@RequestParam String token, @RequestAttribute("authenticationUser") AuthenticationUser user) {
         authenticationService.validateEmailVerificationToken(token, user.getEmail());
         return "Email verified successfully";
     }
 
     @GetMapping("/send-email-verification-token")
-    public String sendEmailVerificationToken(@RequestAttribute("authentication") AuthenticationUser user) {
+    public String sendEmailVerificationToken(@RequestAttribute("authenticationUser") AuthenticationUser user) {
         authenticationService.sendEmailVerificationToken(user.getEmail());
         return "Email verification sent successfully";
     }

@@ -69,13 +69,13 @@ public class AuthenticationService {
 
     public void validateEmailVerificationToken(String token, String email) {
         Optional<AuthenticationUser> user = authenticationUserRepository.findByEmail(email);
-        if (user.isPresent() && user.get().getEmailVerified()) {
+        if (user.isPresent() && encoder.matches(token, user.get().getEmailVerificationToken()) && !user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())) {
             user.get().setEmailVerified(true);
             user.get().setEmailVerificationToken(null);
             user.get().setEmailVerificationTokenExpiryDate(null);
             authenticationUserRepository.save(user.get());
 
-        }else if (user.isPresent() && encoder.matches(token, user.get().getEmailVerificationToken()) && !user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())) {
+        }else if (user.isPresent() && encoder.matches(token, user.get().getEmailVerificationToken()) && user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Email verification token expired.");
         }else {
             throw new IllegalArgumentException("Email verification token failed.");
